@@ -3,10 +3,12 @@ class GrocerySystem {
         this.isLoggedIn = false;
         this.currentUser = null;
         this.validCredentials = {
-            email: "ian.freshmart@gmail.com",
+            email: "icecreamlover23",
             password: "icecreamlover23"
         };
         this.cart = [];
+        this.orderHistory = []; // Store past orders
+
         this.categories = {
             beverages: [
                 { id: 1, name: 'Coca-Cola', price: 45, image: 'coca-cola.jpg' },
@@ -350,28 +352,71 @@ class GrocerySystem {
     }
 
     processOrder() {
-        const paymentMethod = document.querySelector('input[name="payment-method"]:checked');
-        const pickupTime = document.getElementById('pickup-time').value;
-        const deliveryOption = document.querySelector('select').value;
+    const paymentMethod = document.querySelector('input[name="payment-method"]:checked');
+    const pickupTime = document.getElementById('pickup-time').value;
+    const deliveryOption = document.querySelector('select').value;
+    const customerName = document.getElementById('customer-name').value;
+    const contactNumber = document.getElementById('contact-number').value;
 
-        if (!paymentMethod || !pickupTime) {
-            this.showNotification('Please fill in all required fields!');
-            return;
-        }
-
-        // Order processing logic
-        this.showNotification(`Order Placed Successfully! Your ${deliveryOption} is confirmed.`);
-
-        // Reset cart and modal
-        this.cart = [];
-        this.updateCartDisplay();
-        
-        const modal = document.getElementById('checkout-modal');
-        modal.classList.remove('active');
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 300);
+    if (!paymentMethod || !pickupTime || !customerName || !contactNumber) {
+        this.showNotification('Please fill in all required fields!');
+        return;
     }
+
+    const order = {
+        items: [...this.cart],
+        paymentMethod: paymentMethod.value,
+        pickupTime: pickupTime,
+        deliveryOption: deliveryOption,
+        orderDate: new Date().toLocaleString(),
+        customerName: customerName,
+        contactNumber: contactNumber
+    };
+    this.orderHistory.push(order);
+
+    this.cart = [];
+    this.updateCartDisplay();
+
+    const modal = document.getElementById('checkout-modal');
+    modal.classList.remove('active');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+
+    this.showNotification(`Order Placed Successfully! Your ${deliveryOption} is confirmed.`);
+    this.updateOrderHistoryDisplay();
+}
+
+updateOrderHistoryDisplay() {
+    const historyContainer = document.querySelector('.order-history');
+    historyContainer.innerHTML = '';
+
+    if (this.orderHistory.length === 0) {
+        historyContainer.innerHTML = '<p>No orders yet.</p>';
+        return;
+    }
+
+    this.orderHistory.forEach((order, index) => {
+        const orderDiv = document.createElement('div');
+        orderDiv.classList.add('order-record');
+        orderDiv.innerHTML = `
+            <h4>Order #${index + 1} - ${order.orderDate}</h4>
+            <p><strong>Name:</strong> ${order.customerName}</p>
+            <p><strong>Contact:</strong> ${order.contactNumber}</p>
+            <p><strong>Payment:</strong> ${order.paymentMethod}</p>
+            <p><strong>Pickup/Delivery:</strong> ${order.deliveryOption}</p>
+            <p><strong>Pickup Time:</strong> ${order.pickupTime}</p>
+            <ul>
+                ${order.items.map(item => `
+                    <li>${item.name} x${item.quantity} — ₱${(item.price * item.quantity).toFixed(2)}</li>
+                `).join('')}
+            </ul>
+            <hr>
+        `;
+        historyContainer.appendChild(orderDiv);
+    });
+}
+
 
     showLoginModal() {
     const modal = document.getElementById('login-modal');
@@ -463,6 +508,21 @@ updateLoggedInState() {
     navLinks.appendChild(authLink);
 }
 }
+
+function toggleOrderModal() {
+    const modal = document.getElementById('order-history-modal');
+    modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+}
+
+// Optional: close when clicking outside modal content
+window.onclick = function(event) {
+    const modal = document.getElementById('order-history-modal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+};
+
+
 
 // Initialize the system when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
