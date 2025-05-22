@@ -3,7 +3,7 @@ class GrocerySystem {
         this.isLoggedIn = false;
         this.currentUser = null;
         this.validCredentials = {
-            email: "icecreamlover23",
+            email: "ian.freshmart@gmail.com",
             password: "icecreamlover23"
         };
         this.cart = [];
