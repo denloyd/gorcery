@@ -21,6 +21,10 @@ class GrocerySystem {
             frozenGoods: [
                 { id: 5, name: 'Ice Cream', price: 120, image: 'ice-cream.jpg' },
                 { id: 6, name: 'Frozen Fish', price: 180, image: 'frozen-fish.jpg' }
+            ],
+            snacks: [
+                { id: 7, name: 'Nova', price: 65, image: 'nova.jpg' },
+                { id: 8, name: 'Piattos', price: 65, image: 'piattos.jpg' }
             ]
         };
         this.initializeEventListeners();
@@ -28,10 +32,10 @@ class GrocerySystem {
 
     addToCart(productId) {
         // Check if user is logged in
-        if (!this.isLoggedIn) {
-            this.showLoginModal();
-            return;
-        }
+        // if (!this.isLoggedIn) {
+        //     this.showLoginModal();
+        //     return;
+        // }
 
         const product = this.findProductById(productId);
         if (product) {
@@ -119,91 +123,92 @@ class GrocerySystem {
     }
 
     updateCartDisplay() {
-        const cartContainer = document.querySelector('.cart-items');
-        const emptyCartEl = document.querySelector('.empty-cart');
-        const cartSummaryEl = document.querySelector('.cart-summary');
-        const totalElement = document.getElementById('cart-total');
-        const cartCountElement = document.querySelector('.cart-count');
-        
-        // Clear previous cart items
-        cartContainer.innerHTML = '';
+    const cartContainer = document.querySelector('.cart-items');
+    const emptyCartEl = document.querySelector('.empty-cart');
+    const cartSummaryEl = document.querySelector('.cart-summary');
+    const totalElement = document.getElementById('cart-total');
+    const cartCountElement = document.querySelector('.cart-count');
+    
+    // Clear previous cart items
+    cartContainer.innerHTML = '';
 
-        // Update cart counter
-        const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
-        cartCountElement.textContent = totalItems;
+    // Update cart counter
+    const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartCountElement.textContent = totalItems;
 
-        // Check if cart is empty
-        if (this.cart.length === 0) {
-            emptyCartEl.style.display = 'block';
-            cartContainer.style.display = 'none';
-            cartSummaryEl.style.display = 'none';
-            return;
-        }
+    // Check if cart is empty
+    if (this.cart.length === 0) {
+        emptyCartEl.style.display = 'block';
+        cartContainer.style.display = 'none';
+        cartSummaryEl.style.display = 'none';
+        return;
+    }
 
-        // Show cart items and hide empty cart message
-        emptyCartEl.style.display = 'none';
-        cartContainer.style.display = 'block';
-        cartSummaryEl.style.display = 'block';
+    // Show cart items and hide empty cart message
+    emptyCartEl.style.display = 'none';
+    cartContainer.style.display = 'block';
+    cartSummaryEl.style.display = 'block';
 
-        // Render cart items
-        this.cart.forEach(item => {
-            const cartItem = document.createElement('div');
-            cartItem.classList.add('cart-item');
-            cartItem.innerHTML = `
-                <div class="cart-item-details">
-                    <div class="cart-item-image">
-                        <i class="fas ${this.getIconForProduct(item.id)}"></i>
-                    </div>
-                    <div>
-                        <h3 class="cart-item-name">${item.name}</h3>
-                        <p class="cart-item-price">₱${item.price.toFixed(2)}</p>
-                    </div>
+    // Render cart items
+    this.cart.forEach(item => {
+        const cartItem = document.createElement('div');
+        cartItem.classList.add('cart-item');
+        cartItem.innerHTML = `
+            <div class="cart-item-details">
+                <div class="cart-item-image">
+                    <img src="${this.getIconForProduct(item.id)}" alt="Product Image" class="product-image-2">
                 </div>
-                <div class="cart-item-actions">
-                    <div class="quantity-control">
-                        <button class="quantity-btn" onclick="grocerySystem.updateQuantity(${item.id}, ${item.quantity - 1})">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <span>${item.quantity}</span>
-                        <button class="quantity-btn" onclick="grocerySystem.updateQuantity(${item.id}, ${item.quantity + 1})">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                    <button class="remove-btn" onclick="grocerySystem.removeFromCart(${item.id})">
-                        <i class="fas fa-trash"></i>
+                <div>
+                    <h3 class="cart-item-name">${item.name}</h3>
+                    <p class="cart-item-price">₱${item.price.toFixed(2)}</p>
+                </div>
+            </div>
+            <div class="cart-item-actions">
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="grocerySystem.updateQuantity(${item.id}, ${item.quantity - 1})">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <span>${item.quantity}</span>
+                    <button class="quantity-btn" onclick="grocerySystem.updateQuantity(${item.id}, ${item.quantity + 1})">
+                        <i class="fas fa-plus"></i>
                     </button>
                 </div>
-            `;
-            cartContainer.appendChild(cartItem);
-        });
+                <button class="remove-btn" onclick="grocerySystem.removeFromCart(${item.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        cartContainer.appendChild(cartItem);
+    });
 
-        // Calculate total
-        const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const deliveryFee = subtotal > 0 ? 50 : 0; // 50 peso delivery fee
-        const total = subtotal + deliveryFee;
-        
-        // Update summary amounts
-        document.querySelector('.cart-summary-item:first-child').innerHTML = `
-            <span>Subtotal</span>
-            <span>₱${subtotal.toFixed(2)}</span>
-        `;
-        
-        document.querySelector('.cart-summary-item:nth-child(2)').innerHTML = `
-            <span>Delivery Fee</span>
-            <span>₱${deliveryFee.toFixed(2)}</span>
-        `;
-        
-        totalElement.textContent = total.toFixed(2);
-    }
+    // Calculate total (no delivery fee)
+    const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = subtotal; // No delivery fee
+    
+    // Update summary amounts - only update the subtotal
+    document.querySelector('.cart-summary-item:first-child').innerHTML = `
+        <span>Subtotal</span>
+        <span>₱${subtotal.toFixed(2)}</span>
+    `;
+    
+    // Update total
+    totalElement.textContent = total.toFixed(2);
+}
+
 
     getIconForProduct(productId) {
-        // Return appropriate Font Awesome icon class based on product ID
-        if (productId <= 2) return 'fa-wine-bottle'; // Beverages
-        if (productId <= 4) return 'fa-flask'; // Condiments
-        if (productId === 5) return 'fa-ice-cream'; // Ice Cream
-        if (productId === 6) return 'fa-fish'; // Frozen Fish
-        return 'fa-shopping-basket'; // Default
+        // Return image paths for all products
+        if (productId === 1) return 'images/Coke.png'; // Placeholder for product 1
+        if (productId === 2) return 'images/Pepsi.png'; // Pepsi image
+        if (productId === 3) return 'images/Toyo.png'; // Placeholder for product 3
+        if (productId === 4) return 'images/Suka.png'; // Placeholder for product 4
+        if (productId === 5) return 'images/IceCream.png'; // Placeholder for product 5
+        if (productId === 6) return 'images/Fish.png'; // Placeholder for product 6
+        if (productId === 7) return 'images/Nova.png'; // Placeholder for product 7
+        if (productId === 8) return 'images/Piattos.png'; // Placeholder for product 8
+        return 'images/default-product.png'; // Default placeholder
     }
+
 
     initializeEventListeners() {
         // Mobile Menu Toggle
@@ -333,6 +338,8 @@ class GrocerySystem {
             }
         });
 
+        
+
         // Close modal when clicking outside
         window.addEventListener('click', (e) => {
             const loginModal = document.getElementById('login-modal');
@@ -347,6 +354,7 @@ class GrocerySystem {
             }
         });
 
+        
         // Initialize login state UI
         this.updateLoggedInState();
     }
@@ -389,32 +397,299 @@ class GrocerySystem {
 
 updateOrderHistoryDisplay() {
     const historyContainer = document.querySelector('.order-history');
-    historyContainer.innerHTML = '';
+    historyContainer.innerHTML = '<h2>Order History</h2>';
 
     if (this.orderHistory.length === 0) {
-        historyContainer.innerHTML = '<p>No orders yet.</p>';
+        historyContainer.innerHTML += `
+            <div class="empty-orders">
+                <i class="fas fa-clipboard-list" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem;"></i>
+                <h3 style="color: #334155;">No orders yet</h3>
+                <p style="color: #94a3b8;">Your order history will appear here once you make your first purchase.</p>
+            </div>
+        `;
         return;
     }
 
+    const ordersList = document.createElement('div');
+    ordersList.classList.add('orders-list');
+
     this.orderHistory.forEach((order, index) => {
+        const totalAmount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const orderDiv = document.createElement('div');
-        orderDiv.classList.add('order-record');
+        orderDiv.classList.add('order-card');
+        
         orderDiv.innerHTML = `
-            <h4>Order #${index + 1} - ${order.orderDate}</h4>
-            <p><strong>Name:</strong> ${order.customerName}</p>
-            <p><strong>Contact:</strong> ${order.contactNumber}</p>
-            <p><strong>Payment:</strong> ${order.paymentMethod}</p>
-            <p><strong>Pickup/Delivery:</strong> ${order.deliveryOption}</p>
-            <p><strong>Pickup Time:</strong> ${order.pickupTime}</p>
-            <ul>
-                ${order.items.map(item => `
-                    <li>${item.name} x${item.quantity} — ₱${(item.price * item.quantity).toFixed(2)}</li>
-                `).join('')}
-            </ul>
-            <hr>
+            <div class="order-header">
+                <div class="order-info">
+                    <h3 class="order-number">Order #${String(index + 1).padStart(4, '0')}</h3>
+                    <div class="order-status">
+                        <span class="status-badge confirmed">
+                            <i class="fas fa-check-circle"></i> Confirmed
+                        </span>
+                    </div>
+                </div>
+                <div class="order-total">
+                    <span class="total-label">Total</span>
+                    <span class="total-amount">₱${totalAmount.toFixed(2)}</span>
+                </div>
+            </div>
+            
+            <div class="order-details">
+                <div class="customer-info">
+                    <div class="info-row">
+                        <i class="fas fa-user"></i>
+                        <span>${order.customerName}</span>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-phone"></i>
+                        <span>${order.contactNumber}</span>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-calendar"></i>
+                        <span>${order.orderDate}</span>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-clock"></i>
+                        <span>Pickup: ${new Date(order.pickupTime).toLocaleString()}</span>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-credit-card"></i>
+                        <span>${order.paymentMethod === 'cash' ? 'Cash on Pickup' : 'Online Payment'}</span>
+                    </div>
+                </div>
+                
+                <div class="order-qr">
+                    <div class="qr-code">
+                        <img src="images/qrCode.png" alt="Order QR Code" width="240" height="240">
+                    </div>
+                    <p class="qr-label">Order QR Code</p>
+                </div>
+               
+            </div>
+            
+            <div class="order-items">
+                <h4 class="items-title">
+                    <i class="fas fa-shopping-bag"></i>
+                    Items Ordered (${order.items.length})
+                </h4>
+                <div class="items-list">
+                    ${order.items.map(item => `
+                        <div class="order-item">
+                            <div class="item-info">
+                                <span class="item-name">${item.name}</span>
+                                <span class="item-quantity">×${item.quantity}</span>
+                            </div>
+                            <span class="item-price">₱${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
         `;
-        historyContainer.appendChild(orderDiv);
+        
+        ordersList.appendChild(orderDiv);
     });
+
+    historyContainer.appendChild(ordersList);
+
+    // Add styles for the order history
+    if (!document.getElementById('order-history-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'order-history-styles';
+        styles.textContent = `
+            .empty-orders {
+                text-align: center;
+                padding: 3rem 2rem;
+                background: #f8fafc;
+                border-radius: 12px;
+                margin: 2rem 0;
+            }
+            
+            .orders-list {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+                margin-top: 2rem;
+            }
+            
+            .order-card {
+                background: #ffffff;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+            
+            .order-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            
+            .order-header {
+                background: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
+                padding: 1.5rem;
+                color: white;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .order-number {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin: 0 0 0.5rem 0;
+            }
+            
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                background: rgba(255, 255, 255, 0.2);
+                padding: 0.25rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.875rem;
+                font-weight: 500;
+            }
+            
+            .status-badge.confirmed {
+                background: rgba(34, 197, 94, 0.3);
+            }
+            
+            .total-label {
+                display: block;
+                font-size: 0.875rem;
+                opacity: 0.9;
+                margin-bottom: 0.25rem;
+            }
+            
+            .total-amount {
+                font-size: 1.5rem;
+                font-weight: 700;
+            }
+            
+            .order-details {
+                padding: 1.5rem;
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 2rem;
+                align-items: start;
+            }
+            
+            .customer-info {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .info-row {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                color: #334155;
+            }
+            
+            .info-row i {
+                color: #4ade80;
+                width: 16px;
+                text-align: center;
+            }
+            
+            .order-qr {
+                text-align: center;
+                padding: 1rem;
+                background: #f8fafc;
+                border-radius: 8px;
+            }
+            
+            .qr-code {
+                margin-bottom: 0.5rem;
+            }
+            
+            .qr-label {
+                font-size: 0.75rem;
+                color: #94a3b8;
+                margin: 0;
+                font-weight: 500;
+            }
+            
+            .order-items {
+                padding: 0 1.5rem 1.5rem;
+                border-top: 1px solid #e2e8f0;
+                margin-top: 1rem;
+                padding-top: 1.5rem;
+            }
+            
+            .items-title {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: #334155;
+                font-size: 1rem;
+                margin: 0 0 1rem 0;
+            }
+            
+            .items-title i {
+                color: #4ade80;
+            }
+            
+            .items-list {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .order-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem;
+                background: #f8fafc;
+                border-radius: 6px;
+            }
+            
+            .item-info {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .item-name {
+                color: #334155;
+                font-weight: 500;
+            }
+            
+            .item-quantity {
+                color: #94a3b8;
+                font-size: 0.875rem;
+                background: #e2e8f0;
+                padding: 0.125rem 0.5rem;
+                border-radius: 12px;
+            }
+            
+            .item-price {
+                color: #16a34a;
+                font-weight: 600;
+            }
+            
+            @media (max-width: 768px) {
+                .order-header {
+                    flex-direction: column;
+                    gap: 1rem;
+                    text-align: center;
+                }
+                
+                .order-details {
+                    grid-template-columns: 1fr;
+                    gap: 1.5rem;
+                }
+                
+                .order-qr {
+                    order: -1;
+                    text-align: center;
+                }
+            }
+        `;
+        document.head.appendChild(styles);
+    }
 }
 
 
@@ -509,6 +784,7 @@ updateLoggedInState() {
 }
 }
 
+
 function toggleOrderModal() {
     const modal = document.getElementById('order-history-modal');
     modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
@@ -521,6 +797,7 @@ window.onclick = function(event) {
         modal.style.display = 'none';
     }
 };
+
 
 
 
