@@ -209,6 +209,96 @@ class GrocerySystem {
         return 'images/default-product.png'; // Default placeholder
     }
 
+    // New method to handle QR code redemption
+    redeemOrder(orderIndex) {
+        const order = this.orderHistory[orderIndex];
+        if (!order) return;
+
+        // Check if order is already redeemed
+        if (order.redeemed) {
+            this.showRedemptionModal(false, 'This order has already been redeemed!');
+            return;
+        }
+
+        // Mark order as redeemed
+        order.redeemed = true;
+        order.redemptionDate = new Date().toLocaleString();
+
+        // Show success modal
+        this.showRedemptionModal(true, `Order #${String(orderIndex + 1).padStart(4, '0')} has been successfully redeemed!`);
+
+        // Update the display to reflect the redeemed status
+        this.updateOrderHistoryDisplay();
+    }
+
+    // Method to show redemption modal
+    showRedemptionModal(success, message) {
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('redemption-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'redemption-modal';
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content redemption-modal-content">
+                    <div class="redemption-icon">
+                        <i class="fas fa-check-circle" id="redemption-success-icon"></i>
+                        <i class="fas fa-exclamation-triangle" id="redemption-error-icon" style="display: none;"></i>
+                    </div>
+                    <h2 id="redemption-title">Order Redeemed!</h2>
+                    <p id="redemption-message">Your order has been successfully redeemed.</p>
+                    <button id="redemption-ok-btn" class="btn btn-primary">OK</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Add event listener for OK button
+            document.getElementById('redemption-ok-btn').addEventListener('click', () => {
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            });
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                    }, 300);
+                }
+            });
+        }
+
+        // Update modal content based on success/failure
+        const successIcon = document.getElementById('redemption-success-icon');
+        const errorIcon = document.getElementById('redemption-error-icon');
+        const title = document.getElementById('redemption-title');
+        const messageEl = document.getElementById('redemption-message');
+
+        if (success) {
+            successIcon.style.display = 'block';
+            errorIcon.style.display = 'none';
+            title.textContent = 'Order Redeemed!';
+            title.style.color = '#16a34a';
+            successIcon.style.color = '#16a34a';
+        } else {
+            successIcon.style.display = 'none';
+            errorIcon.style.display = 'block';
+            title.textContent = 'Already Redeemed';
+            title.style.color = '#dc2626';
+            errorIcon.style.color = '#dc2626';
+        }
+
+        messageEl.textContent = message;
+
+        // Show modal
+        modal.style.display = 'block';
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 10);
+    }
 
     initializeEventListeners() {
         // Mobile Menu Toggle
@@ -378,7 +468,8 @@ class GrocerySystem {
         deliveryOption: deliveryOption,
         orderDate: new Date().toLocaleString(),
         customerName: customerName,
-        contactNumber: contactNumber
+        contactNumber: contactNumber,
+        redeemed: false // Add redeemed status
     };
     this.orderHistory.push(order);
 
@@ -418,13 +509,18 @@ updateOrderHistoryDisplay() {
         const orderDiv = document.createElement('div');
         orderDiv.classList.add('order-card');
         
+        // Determine status based on redemption
+        const statusClass = order.redeemed ? 'redeemed' : 'confirmed';
+        const statusText = order.redeemed ? 'Redeemed' : 'Confirmed';
+        const statusIcon = order.redeemed ? 'fa-check-double' : 'fa-check-circle';
+        
         orderDiv.innerHTML = `
             <div class="order-header">
                 <div class="order-info">
                     <h3 class="order-number">Order #${String(index + 1).padStart(4, '0')}</h3>
                     <div class="order-status">
-                        <span class="status-badge confirmed">
-                            <i class="fas fa-check-circle"></i> Confirmed
+                        <span class="status-badge ${statusClass}">
+                            <i class="fas ${statusIcon}"></i> ${statusText}
                         </span>
                     </div>
                 </div>
@@ -456,13 +552,20 @@ updateOrderHistoryDisplay() {
                         <i class="fas fa-credit-card"></i>
                         <span>${order.paymentMethod === 'cash' ? 'Cash on Pickup' : 'Online Payment'}</span>
                     </div>
+                    ${order.redeemed ? `
+                    <div class="info-row">
+                        <i class="fas fa-check-double"></i>
+                        <span>Redeemed: ${order.redemptionDate}</span>
+                    </div>
+                    ` : ''}
                 </div>
                 
                 <div class="order-qr">
-                    <div class="qr-code">
+                    <div class="qr-code ${order.redeemed ? 'redeemed' : ''}" onclick="grocerySystem.redeemOrder(${index})" style="cursor: pointer;">
                         <img src="images/qrCode.png" alt="Order QR Code" width="240" height="240">
+                        ${order.redeemed ? '<div class="redeemed-overlay"><i class="fas fa-check-circle"></i><span>REDEEMED</span></div>' : ''}
                     </div>
-                    <p class="qr-label">Order QR Code</p>
+                    <p class="qr-label">${order.redeemed ? 'Order Redeemed' : 'Click to Redeem Order'}</p>
                 </div>
                
             </div>
@@ -491,7 +594,7 @@ updateOrderHistoryDisplay() {
 
     historyContainer.appendChild(ordersList);
 
-    // Add styles for the order history
+    // Add styles for the order history (including new redemption styles)
     if (!document.getElementById('order-history-styles')) {
         const styles = document.createElement('style');
         styles.id = 'order-history-styles';
@@ -554,6 +657,10 @@ updateOrderHistoryDisplay() {
                 background: rgba(34, 197, 94, 0.3);
             }
             
+            .status-badge.redeemed {
+                background: rgba(59, 130, 246, 0.3);
+            }
+            
             .total-label {
                 display: block;
                 font-size: 0.875rem;
@@ -598,9 +705,42 @@ updateOrderHistoryDisplay() {
                 padding: 1rem;
                 background: #f8fafc;
                 border-radius: 8px;
+                position: relative;
             }
             
             .qr-code {
+                margin-bottom: 0.5rem;
+                position: relative;
+                display: inline-block;
+                transition: all 0.3s ease;
+            }
+            
+            .qr-code:hover {
+                transform: scale(1.05);
+            }
+            
+            .qr-code.redeemed {
+                opacity: 0.6;
+            }
+            
+            .redeemed-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(59, 130, 246, 0.9);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: bold;
+                border-radius: 8px;
+            }
+            
+            .redeemed-overlay i {
+                font-size: 2rem;
                 margin-bottom: 0.5rem;
             }
             
@@ -670,6 +810,50 @@ updateOrderHistoryDisplay() {
                 font-weight: 600;
             }
             
+            /* Redemption Modal Styles */
+            .redemption-modal-content {
+                text-align: center;
+                padding: 2rem;
+                max-width: 400px;
+            }
+            
+            .redemption-icon {
+                font-size: 4rem;
+                margin-bottom: 1rem;
+            }
+            
+            .redemption-modal-content h2 {
+                margin: 0 0 1rem 0;
+                font-size: 1.5rem;
+            }
+            
+            .redemption-modal-content p {
+                margin: 0 0 2rem 0;
+                color: #64748b;
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+            
+            .redemption-modal-content .btn {
+                padding: 0.75rem 2rem;
+                font-size: 1rem;
+                font-weight: 600;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .redemption-modal-content .btn-primary {
+                background: #4ade80;
+                color: white;
+            }
+            
+            .redemption-modal-content .btn-primary:hover {
+                background: #16a34a;
+                transform: translateY(-1px);
+            }
+            
             @media (max-width: 768px) {
                 .order-header {
                     flex-direction: column;
@@ -685,6 +869,15 @@ updateOrderHistoryDisplay() {
                 .order-qr {
                     order: -1;
                     text-align: center;
+                }
+                
+                .redemption-modal-content {
+                    padding: 1.5rem;
+                    margin: 1rem;
+                }
+                
+                .redemption-icon {
+                    font-size: 3rem;
                 }
             }
         `;
