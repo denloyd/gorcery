@@ -54,6 +54,7 @@
                 <button class="category-btn">Beverages</button>
                 <button class="category-btn">Condiments</button>
                 <button class="category-btn">Frozen Goods</button>
+                <button class="category-btn">Snacks</button>
             </div>
 
             <!-- Beverage Section -->
@@ -61,7 +62,8 @@
                 <h2>Beverages</h2>
                 <div class="product-grid">
                     <div class="product-card">
-                        <div class="product-image"></div>
+                        <div class="product-image coke">
+                        </div>
                         <div class="product-details">
                             <h3 class="product-name">Coca-Cola</h3>
                             <p class="product-price">₱45.00</p>
@@ -74,7 +76,7 @@
                     </div>
                     
                     <div class="product-card">
-                        <div class="product-image">
+                        <div class="product-image pepsi">
                         </div>
                         <div class="product-details">
                             <h3 class="product-name">Pepsi</h3>
@@ -94,7 +96,7 @@
                 <h2>Condiments</h2>
                 <div class="product-grid">
                     <div class="product-card">
-                        <div class="product-image">
+                        <div class="product-image toyo">
                         </div>
                         <div class="product-details">
                             <h3 class="product-name">Soy Sauce</h3>
@@ -108,7 +110,7 @@
                     </div>
                     
                     <div class="product-card">
-                        <div class="product-image">
+                        <div class="product-image suka">
                         </div>
                         <div class="product-details">
                             <h3 class="product-name">Vinegar</h3>
@@ -128,7 +130,7 @@
                 <h2>Frozen Goods</h2>
                 <div class="product-grid">
                     <div class="product-card">
-                        <div class="product-image">
+                        <div class="product-image iceCream">
                         </div>
                         <div class="product-details">
                             <h3 class="product-name">Ice Cream</h3>
@@ -142,13 +144,47 @@
                     </div>
                     
                     <div class="product-card">
-                        <div class="product-image">
+                        <div class="product-image fish">
                         </div>
                         <div class="product-details">
                             <h3 class="product-name">Frozen Fish</h3>
                             <p class="product-price">₱180.00</p>
                             <div class="product-actions">
                                 <button class="add-to-cart" onclick="grocerySystem.addToCart(6)">
+                                    <i class="fas fa-cart-plus"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Snacks Section -->
+            <div class="category-section" id="snacks"> 
+                <h2>Snacks</h2>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-image nova">
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">Nova</h3>
+                            <p class="product-price">₱65.00</p>
+                            <div class="product-actions">
+                                <button class="add-to-cart" onclick="grocerySystem.addToCart(7)">
+                                    <i class="fas fa-cart-plus"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card">
+                        <div class="product-image piattos">
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">Piattos</h3>
+                            <p class="product-price">₱65.00</p>
+                            <div class="product-actions">
+                                <button class="add-to-cart" onclick="grocerySystem.addToCart(8)">
                                     <i class="fas fa-cart-plus"></i> Add
                                 </button>
                             </div>
@@ -183,6 +219,10 @@
                     <span>Subtotal</span>
                     <span>₱0.00</span>
                 </div>
+                <!-- <div class="cart-summary-item">
+                    <span>Delivery Fee</span>
+                    <span>₱50.00</span>
+                </div> -->
                 <div class="cart-total">
                     <span>Total</span>
                     <span>₱<span id="cart-total">0.00</span></span>
@@ -223,22 +263,22 @@
 
     <!-- Checkout Modal -->
     <div id="checkout-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Checkout</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-           <div class="form-group">
-    <label class="form-label">Contact Information</label>
-    <input type="text" id="customer-name" class="form-control" placeholder="Your Name" required>
-</div>
-<div class="form-group">
-    <input type="tel" id="contact-number" class="form-control" placeholder="Phone Number" required>
-</div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Checkout</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+            <div class="form-group">
+        <label class="form-label">Contact Information</label>
+        <input type="text" id="customer-name" class="form-control" placeholder="Your Name" required>
+    </div>
+    <div class="form-group">
+        <input type="tel" id="contact-number" class="form-control" placeholder="Phone Number" required>
+    </div>
 
             
             <div class="form-group">
-                <label class="form-label">Select Pickup/Delivery Option</label>
+                <label class="form-label">Select Pickup</label>
                 <select class="form-control">
                     <option value="pickup">Store Pickup</option>
                 </select>
@@ -256,7 +296,7 @@
                         <input type="radio" id="cash" name="payment-method" value="cash" checked>
                         <label for="cash" class="payment-label">
                             <i class="fas fa-money-bill-wave payment-icon"></i>
-                            Cash on Pickup/Delivery
+                            Cash on Pickup
                         </label>
                     </div>
                     <div class="payment-option">
@@ -274,6 +314,7 @@
             </button>
         </div>
     </div>
+
 
     <footer>
         <div class="container">

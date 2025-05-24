@@ -254,13 +254,44 @@ nav {
     height: 180px;
     width: 100%;
     object-fit: cover;
-    background-image:url(images/Pepsi.png) ;
     background-size: cover;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+.product-image.coke{
+    background-image: url(images/Coke.png);
+}
+
+.product-image.pepsi{
+    background-image: url(images/Pepsi.png);
+}
+.product-image.toyo{
+    background-image: url(images/Toyo.png);
+}
+.product-image.suka{
+    background-image: url(images/Suka.png);
+}
+.product-image.iceCream{
+    background-image: url(images/IceCream.png);
+}
+.product-image.fish{
+    background-image: url(images/Fish.png);
+}
+.product-image.nova{
+    background-image: url(images/Nova.png);
+}
+.product-image.piattos{
+    background-image: url(images/Piattos.png);
+}
+
+.product-image-2 {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+}
 
 
 .product-details {
@@ -654,5 +685,6 @@ footer {
     margin-bottom: 2rem;
     color: var(--light-text);
 }
+
 
 
