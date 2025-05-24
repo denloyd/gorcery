@@ -254,16 +254,14 @@ nav {
     height: 180px;
     width: 100%;
     object-fit: cover;
-    background-color: #f1f5f9;
+    background-image:url(images/Pepsi.png) ;
+    background-size: cover;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.product-image i {
-    font-size: 4rem;
-    color: var(--light-text);
-}
+
 
 .product-details {
     padding: 1rem;
