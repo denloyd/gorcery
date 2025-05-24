@@ -32,10 +32,10 @@ class GrocerySystem {
 
     addToCart(productId) {
         // Check if user is logged in
-        // if (!this.isLoggedIn) {
-        //     this.showLoginModal();
-        //     return;
-        // }
+        if (!this.isLoggedIn) {
+            this.showLoginModal();
+            return;
+        }
 
         const product = this.findProductById(productId);
         if (product) {
