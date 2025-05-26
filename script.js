@@ -30,7 +30,13 @@ class GrocerySystem {
         this.initializeEventListeners();
     }
 
+    
     addToCart(productId) {
+        // Check if user is logged in
+    if (!this.isLoggedIn) {
+         this.showLoginModal();
+      return;
+    }
         const product = this.findProductById(productId);
         if (product) {
             const existingItem = this.cart.find(item => item.id === productId);
